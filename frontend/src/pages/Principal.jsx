@@ -2,7 +2,20 @@ import React from 'react'
 
 export default function Principal() {
   return (
-    <div>principal</div>
+    <><h3>albertito</h3>
+    
+    
+    
+    
+    <h3>ajfkadjf</h3>
+    
+    
+    
+    
+    
+    
+    
+    </>
   )
   
 }
