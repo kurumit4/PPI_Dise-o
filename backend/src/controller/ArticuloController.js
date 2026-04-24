@@ -1,4 +1,4 @@
-import { ListarArticulo } from "../model/ArticuloModel.js";
+import { ListarArticulos } from "../model/ArticuloModel.js";
 
 const getArticulos = async (req, res) =>{
 

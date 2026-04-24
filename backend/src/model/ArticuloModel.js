@@ -1,6 +1,6 @@
 import {sql, poolConect} from '../config/db.js'
 
-const ListarArticulos= async(req, res) =>{
+const ListarArticulos= async() =>{
 
     try {
         
