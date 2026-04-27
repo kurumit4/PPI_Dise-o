@@ -1,77 +1,163 @@
 import { useState } from "react";
 
 function Login() {
-  // Este estado controla qué formulario se ve: "login" o "registro"
+  // 👇 ahora inicia en LOGIN
   const [vista, setVista] = useState("login");
 
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-[#7a2f0f] py-12 px-4">
-      <div className="bg-yellow-400 rounded-lg shadow-xl p-8 max-w-md w-full">
-        
-        <div className="flex justify-center">
-          <img
-            src="https://www.mimos.com.co/wp-content/uploads/2022/07/newlogomimos.png"
-            alt="Mimos logo"
-            className="w-32 h-auto"
-          />
-        </div>
+  // 🔹 REGISTRO
+  const handleRegister = async () => {
+    if (!nombre || !apellido || !email || !password) {
+      alert("Todos los campos son obligatorios");
+      return;
+    }
 
-   
+    try {
+      const response = await fetch("http://localhost:3000/api/usuario", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id_rol: 1,
+          nombre,
+          apellido,
+          email,
+          password,
+          estado: "activo",
+        }),
+      });
+
+      const data = await response.json();
+      alert(data.message);
+
+      setNombre("");
+      setApellido("");
+      setEmail("");
+      setPassword("");
+
+      // 👇 volver a login después de registrar
+      setVista("login");
+
+    } catch (error) {
+      console.error(error);
+      alert("Error al registrar usuario");
+    }
+  };
+
+  // 🔹 LOGIN (simulado por ahora)
+  const handleLogin = () => {
+    if (!email || !password) {
+      alert("Ingresa email y contraseña");
+      return;
+    }
+
+    alert("Login exitoso (simulado)");
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#7a2f0f]">
+      <div className="bg-yellow-400 p-8 rounded-lg w-96">
+
+        {/* 🔹 LOGIN */}
         {vista === "login" && (
           <>
-            <div className="text-center">
-              <p className="text-gray-600 m-4 font-bold">Inicia sesión en tu cuenta</p>
-            </div>
+            <h2 className="text-center font-bold mb-4">Iniciar Sesión</h2>
 
-            <form className="space-y-4">
-              <input type="email" placeholder="Correo" className="w-full p-3 rounded-lg" />
-              <input type="password" placeholder="Contraseña" className="w-full p-3 rounded-lg" />
-              <button type="button" className="w-full bg-[#7a2f0f] text-white p-3 rounded-lg font-bold">
-                Iniciar sesión
-              </button>
-            </form>
+            <input
+              type="email"
+              placeholder="Correo"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 mb-2"
+            />
 
-            <div className="mt-6 text-center">
-              <p className="text-gray-700 text-sm">
-                ¿No tienes una cuenta?{" "}
-                <button 
-                  onClick={() => setVista("registro")}
-                  className="text-[#7a2f0f] font-bold underline"
-                >
-                  Regístrate aquí
-                </button>
-              </p>
-            </div>
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 mb-4"
+            />
+
+            <button
+              onClick={handleLogin}
+              className="w-full bg-[#7a2f0f] text-white p-2"
+            >
+              Iniciar sesión
+            </button>
+
+            {/* 👇 REDIRECCIÓN A REGISTRO */}
+            <p className="text-center mt-4 text-sm">
+              ¿No tienes cuenta?{" "}
+              <span
+                onClick={() => setVista("registro")}
+                className="text-blue-700 cursor-pointer underline"
+              >
+                Crear cuenta
+              </span>
+            </p>
           </>
         )}
 
-  
+        {/* 🔹 REGISTRO */}
         {vista === "registro" && (
           <>
-            <div className="text-center">
-              <p className="text-gray-600 m-4 font-bold">Crea tu cuenta nueva</p>
-            </div>
+            <h2 className="text-center font-bold mb-4">Registro</h2>
 
-            <form className="space-y-4">
-              <input type="text" placeholder="Nombre completo" className="w-full p-3 rounded-lg" />
-              <input type="email" placeholder="Correo electrónico" className="w-full p-3 rounded-lg" />
-              <input type="password" placeholder="Contraseña" className="w-full p-3 rounded-lg" />
-              <button type="button" className="w-full bg-[#7a2f0f] text-white p-3 rounded-lg font-bold">
-                Crear cuenta
-              </button>
-            </form>
+            <input
+              type="text"
+              placeholder="Nombre"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              className="w-full p-2 mb-2"
+            />
 
-            <div className="mt-6 text-center">
-              <button 
-                onClick={() => setVista("login")} 
-                className="text-[#7a2f0f] text-sm font-bold underline"
+            <input
+              type="text"
+              placeholder="Apellido"
+              value={apellido}
+              onChange={(e) => setApellido(e.target.value)}
+              className="w-full p-2 mb-2"
+            />
+
+            <input
+              type="email"
+              placeholder="Correo"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 mb-2"
+            />
+
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 mb-4"
+            />
+
+            <button
+              onClick={handleRegister}
+              className="w-full bg-[#7a2f0f] text-white p-2"
+            >
+              Crear cuenta
+            </button>
+
+            {/* 👇 VOLVER A LOGIN */}
+            <p className="text-center mt-4 text-sm">
+              ¿Ya tienes cuenta?{" "}
+              <span
+                onClick={() => setVista("login")}
+                className="text-blue-700 cursor-pointer underline"
               >
-                Volver al inicio de sesión
-              </button>
-            </div>
+                Iniciar sesión
+              </span>
+            </p>
           </>
         )}
 
