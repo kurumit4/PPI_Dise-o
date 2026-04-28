@@ -27,7 +27,7 @@ function Login() {
           nombre,
           apellido,
           email,
-          password,
+          password: password,
           estado: "activo",
         }),
       });

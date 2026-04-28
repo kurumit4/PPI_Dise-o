@@ -1,4 +1,6 @@
 import { poolConect } from '../config/db.js';
+import sql from 'mssql';
+import bcrypt from 'bcrypt';
 
 const listarUsuarios = async () => {
     try {
@@ -11,9 +13,8 @@ const listarUsuarios = async () => {
     }
 };
 
-export { listarUsuarios };
-
 const insertarUsuario = async (usuario)  => {
+      const passwordHasheada = await bcrypt.hash(usuario.password_hash, 10);
     try {
         const conn = await poolConect();
         const result = await conn.request()
@@ -22,12 +23,27 @@ const insertarUsuario = async (usuario)  => {
             .input('apellido', sql.VarChar, usuario.apellido)
             .input('email', sql.VarChar, usuario.email)
             .input('estado', sql.VarChar, usuario.estado)
-            .execute("sp_InsertarUsuario"); // tu SP para insertar usuario
-
+            .input('password_hash', sql.VarChar, passwordHasheada)
+            .execute("sp_InsertarUsuario"); 
+ 
             return result;
     } catch (error) {
         throw error;
     }
 };
 
-export { listarUsuarios, insertarUsuario };
+const loginUsuario = async (email) => {
+    try {
+        const conn = await poolConect();
+        const result = await conn.request()
+            .input('email', sql.VarChar, email)
+            .execute("sp_LoginUsuario");
+
+        return result.recordset[0]; 
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+export { listarUsuarios, insertarUsuario, loginUsuario };
