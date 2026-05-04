@@ -1,6 +1,9 @@
 import { listarUsuarios } from "../model/UsuarioModel.js";
 import { insertarUsuario } from "../model/UsuarioModel.js"; 
 import { loginUsuario } from "../model/UsuarioModel.js";
+import { getUsuarioById } from "../model/UsuarioModel.js";
+import { updateUsuario } from "../model/UsuarioModel.js";
+import { deleteUsuario } from "../model/UsuarioModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -23,6 +26,7 @@ const getUsuarios = async (req, res) =>{
     }
 
 }
+
 
 const postUsuario = async (req, res) => {
 
@@ -97,4 +101,66 @@ const login = async (req, res) => {
     }
 };
 
-export { postUsuario, login, getUsuarios };
+
+const getUsuario = async ( req, res) => {
+    try {
+        const { id } = req.params;
+        const usuario = await getUsuarioById(id);
+
+        if (!usuario) {
+            return res.status(404).json({
+                success: false,
+                message: "Usuario no encontrado"
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data: usuario
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener el usuario",
+            error: error.message
+        });
+    }
+};
+
+const putUsuario = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const usuario = await updateUsuario(id, req.body);
+
+        res.status(200).json({
+            success: true,
+            message: "Usuario actualizado exitosamente",
+            data: usuario
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al actualizar el usuario",
+            error: error.message
+        });
+    }
+}
+
+const deleteUsuario = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await deleteUsuario(id);
+
+        res.status(200).json({
+            success: true,
+            message: "Usuario eliminado exitosamente"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al eliminar el usuario",
+            error: error.message
+        });
+    }
+};
+
+export { postUsuario, login, getUsuarios, getUsuario, putUsuario, deleteUsuario };
