@@ -145,7 +145,7 @@ const putUsuario = async (req, res) => {
     }
 }
 
-const deleteUsuario = async (req, res) => {
+const deleteUsuarios = async (req, res) => {
     try {
         const { id } = req.params;
         await deleteUsuario(id);
@@ -163,4 +163,4 @@ const deleteUsuario = async (req, res) => {
     }
 };
 
-export { postUsuario, login, getUsuarios, getUsuario, putUsuario, deleteUsuario };
+export { postUsuario, login, getUsuarios, getUsuario, putUsuario, deleteUsuarios };

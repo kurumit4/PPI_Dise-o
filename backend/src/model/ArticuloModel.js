@@ -1,60 +1,53 @@
-import {poolConect} from '../config/db.js'
-import sql from 'mssql'
-const ListarArticulos= async() =>{
+import { poolConect } from '../config/db.js';
+import sql from 'mssql';
 
-    try {
-        
-        const conn = await poolConect
-        const resul = await conn.request().execute("sp_ListarArticulo")
-        return resul.recordset
+const listarArticulos = async () => {
+    const conn = await poolConect();
+    const result = await conn.request().execute("sp_ListarArticulos");
+    return result.recordset;
+};
 
-    } catch (error) {
-        throw error
-    }
-
-}
-
-const obtenerArticuloPorId = async (id) => {
+const obtenerArticulo = async (id) => {
     const conn = await poolConect();
     const result = await conn.request()
         .input('id_articulo', sql.BigInt, id)
-        .execute("sp_ObtenerArticuloPorId");
+        .execute("sp_ObtenerArticulo");
     return result.recordset[0];
 };
 
 const insertarArticulo = async (articulo) => {
     const conn = await poolConect();
     const result = await conn.request()
-        .input('id_categoria', sql.BigInt, articulo.id_categoria)
-        .input('nombre', sql.VarChar, articulo.nombre)
-        .input('descripcion', sql.VarChar, articulo.descripcion)
-        .input('stock', sql.Int, articulo.stock)
-        .input('precio', sql.Decimal(12, 2), articulo.precio)
-        .input('estado', sql.VarChar, articulo.estado)
+        .input('id_categoria', sql.BigInt,          articulo.id_categoria)
+        .input('nombre',       sql.VarChar(200),    articulo.nombre)
+        .input('descripcion',  sql.Text,            articulo.descripcion)
+        .input('stock',        sql.Int,             articulo.stock)
+        .input('precio',       sql.Decimal(12, 2),  articulo.precio)
+        .input('estado',       sql.VarChar(20),     articulo.estado)
         .execute("sp_InsertarArticulo");
-    return result;
+    return result.recordset[0];
 };
 
 const actualizarArticulo = async (id, articulo) => {
     const conn = await poolConect();
     const result = await conn.request()
-        .input('id_articulo', sql.BigInt, id)
-        .input('id_categoria', sql.BigInt, articulo.id_categoria)
-        .input('nombre', sql.VarChar, articulo.nombre)
-        .input('descripcion', sql.VarChar, articulo.descripcion)
-        .input('stock', sql.Int, articulo.stock)
-        .input('precio', sql.Decimal(12, 2), articulo.precio)
-        .input('estado', sql.VarChar, articulo.estado)
+        .input('id_articulo',  sql.BigInt,          id)
+        .input('id_categoria', sql.BigInt,          articulo.id_categoria)
+        .input('nombre',       sql.VarChar(200),    articulo.nombre)
+        .input('descripcion',  sql.Text,            articulo.descripcion)
+        .input('stock',        sql.Int,             articulo.stock)
+        .input('precio',       sql.Decimal(12, 2),  articulo.precio)
+        .input('estado',       sql.VarChar(20),     articulo.estado)
         .execute("sp_ActualizarArticulo");
-    return result;
+    return result.recordset[0];
 };
 
 const eliminarArticulo = async (id) => {
     const conn = await poolConect();
     const result = await conn.request()
-    .input('id_articulo', sql.BigInt, id)
-    .execute("sp_EliminarArticulo");
-    return result;
+        .input('id_articulo', sql.BigInt, id)
+        .execute("sp_EliminarArticulo");
+    return result.recordset[0];
 };
 
-export {ListarArticulos, obtenerArticuloPorId, insertarArticulo, actualizarArticulo, eliminarArticulo}
+export { listarArticulos, obtenerArticulo, insertarArticulo, actualizarArticulo, eliminarArticulo };
