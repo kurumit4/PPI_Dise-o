@@ -1,169 +1,106 @@
-import { useState } from "react";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext';
 
-function Login() {
-  // 👇 ahora inicia en LOGIN
-  const [vista, setVista] = useState("login");
+const API = 'http://localhost:3000/api';
 
-  const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Login = () => {
+    const { login }   = useAuth();
+    const navigate    = useNavigate();
+    const [form, setForm]         = useState({ email: '', password: '' });
+    const [error, setError]       = useState('');
+    const [cargando, setCargando] = useState(false);
 
-  // 🔹 REGISTRO
-  const handleRegister = async () => {
-    if (!nombre || !apellido || !email || !password) {
-      alert("Todos los campos son obligatorios");
-      return;
-    }
+    const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
-    try {
-      const response = await fetch("http://localhost:3000/api/usuario", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id_rol: 1,
-          nombre,
-          apellido,
-          email,
-          password: password,
-          estado: "activo",
-        }),
-      });
+    const handleSubmit = async () => {
+        setError('');
+        if (!form.email || !form.password) return setError('Completa todos los campos.');
+        setCargando(true);
+        try {
+            const res  = await fetch(`${API}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: form.email, password: form.password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                login(data);
+                navigate('/');
+            } else {
+                setError(data.message || 'Credenciales incorrectas.');
+            }
+        } catch {
+            setError('Error de conexión con el servidor.');
+        } finally {
+            setCargando(false);
+        }
+    };
 
-      const data = await response.json();
-      alert(data.message);
+    const handleKey = e => { if (e.key === 'Enter') handleSubmit(); };
 
-      setNombre("");
-      setApellido("");
-      setEmail("");
-      setPassword("");
+    return (
+        <div style={s.page}>
+            {/* Decoración fondo */}
+            <div style={{ ...s.blob, background: '#FFE066', width: 400, height: 400, top: -150, left: -150 }} />
+            <div style={{ ...s.blob, background: '#4ECDC4', width: 300, height: 300, bottom: -100, right: -100 }} />
+            <div style={{ ...s.blob, background: '#A78BFA', width: 200, height: 200, top: '40%', right: '10%' }} />
 
-      // 👇 volver a login después de registrar
-      setVista("login");
+            <div style={s.card}>
+                {/* Cabecera colorida */}
+                <div style={s.cardTop}>
+                    <Link to="/" style={s.back}>← Volver</Link>
+                    <div style={s.iconBox}>✏️</div>
+                    <h1 style={s.title}>¡Hola de nuevo!</h1>
+                    <p style={s.subtitle}>Inicia sesión en tu cuenta</p>
+                </div>
 
-    } catch (error) {
-      console.error(error);
-      alert("Error al registrar usuario");
-    }
-  };
+                <div style={s.cardBody}>
+                    {error && <div style={s.errorBox}>{error}</div>}
 
-  // 🔹 LOGIN (simulado por ahora)
-  const handleLogin = () => {
-    if (!email || !password) {
-      alert("Ingresa email y contraseña");
-      return;
-    }
+                    <div style={s.field}>
+                        <label style={s.label}>Correo electrónico</label>
+                        <input style={s.input} name="email" type="email" placeholder="tu@correo.com"
+                            value={form.email} onChange={handleChange} onKeyDown={handleKey} />
+                    </div>
 
-    alert("Login exitoso (simulado)");
-  };
+                    <div style={s.field}>
+                        <label style={s.label}>Contraseña</label>
+                        <input style={s.input} name="password" type="password" placeholder="••••••••"
+                            value={form.password} onChange={handleChange} onKeyDown={handleKey} />
+                    </div>
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-[#7a2f0f]">
-      <div className="bg-yellow-400 p-8 rounded-lg w-96">
+                    <button style={{ ...s.btn, opacity: cargando ? 0.7 : 1 }} onClick={handleSubmit} disabled={cargando}>
+                        {cargando ? 'Ingresando...' : 'Ingresar 🚀'}
+                    </button>
 
-        {/* 🔹 LOGIN */}
-        {vista === "login" && (
-          <>
-            <h2 className="text-center font-bold mb-4">Iniciar Sesión</h2>
+                    <p style={s.register}>
+                        ¿No tienes cuenta?{' '}
+                        <Link to="/registro" style={s.registerLink}>Regístrate gratis</Link>
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+};
 
-            <input
-              type="email"
-              placeholder="Correo"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 mb-2"
-            />
-
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 mb-4"
-            />
-
-            <button
-              onClick={handleLogin}
-              className="w-full bg-[#7a2f0f] text-white p-2"
-            >
-              Iniciar sesión
-            </button>
-
-            {/* 👇 REDIRECCIÓN A REGISTRO */}
-            <p className="text-center mt-4 text-sm">
-              ¿No tienes cuenta?{" "}
-              <span
-                onClick={() => setVista("registro")}
-                className="text-blue-700 cursor-pointer underline"
-              >
-                Crear cuenta
-              </span>
-            </p>
-          </>
-        )}
-
-        {/* 🔹 REGISTRO */}
-        {vista === "registro" && (
-          <>
-            <h2 className="text-center font-bold mb-4">Registro</h2>
-
-            <input
-              type="text"
-              placeholder="Nombre"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className="w-full p-2 mb-2"
-            />
-
-            <input
-              type="text"
-              placeholder="Apellido"
-              value={apellido}
-              onChange={(e) => setApellido(e.target.value)}
-              className="w-full p-2 mb-2"
-            />
-
-            <input
-              type="email"
-              placeholder="Correo"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 mb-2"
-            />
-
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 mb-4"
-            />
-
-            <button
-              onClick={handleRegister}
-              className="w-full bg-[#7a2f0f] text-white p-2"
-            >
-              Crear cuenta
-            </button>
-
-            {/* 👇 VOLVER A LOGIN */}
-            <p className="text-center mt-4 text-sm">
-              ¿Ya tienes cuenta?{" "}
-              <span
-                onClick={() => setVista("login")}
-                className="text-blue-700 cursor-pointer underline"
-              >
-                Iniciar sesión
-              </span>
-            </p>
-          </>
-        )}
-
-      </div>
-    </div>
-  );
-}
+const s = {
+    page:        { minHeight: '100vh', background: '#FFFDF7', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', overflow: 'hidden', fontFamily: "'Nunito','Segoe UI',sans-serif" },
+    blob:        { position: 'absolute', borderRadius: '50%', opacity: 0.25, zIndex: 0 },
+    card:        { position: 'relative', zIndex: 2, background: '#fff', borderRadius: '28px', boxShadow: '0 8px 48px rgba(0,0,0,0.12)', width: '100%', maxWidth: '420px', overflow: 'hidden' },
+    cardTop:     { background: 'linear-gradient(135deg, #FF6B9D, #A78BFA)', padding: '40px 32px 32px', textAlign: 'center' },
+    back:        { display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: '700', textDecoration: 'none', marginBottom: '20px', textAlign: 'left' },
+    iconBox:     { fontSize: '48px', marginBottom: '12px' },
+    title:       { fontSize: '28px', fontWeight: '900', color: '#fff', margin: '0 0 6px', letterSpacing: '-0.5px' },
+    subtitle:    { fontSize: '14px', color: 'rgba(255,255,255,0.8)', margin: 0, fontWeight: '500' },
+    cardBody:    { padding: '32px' },
+    errorBox:    { background: '#FFF0F0', color: '#EF4444', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', marginBottom: '20px', borderLeft: '3px solid #EF4444', fontWeight: '600' },
+    field:       { marginBottom: '20px' },
+    label:       { display: 'block', fontSize: '13px', fontWeight: '800', color: '#333', marginBottom: '8px', letterSpacing: '0.3px' },
+    input:       { width: '100%', padding: '14px 18px', border: '2.5px solid #f0f0f0', borderRadius: '14px', fontSize: '14px', outline: 'none', background: '#FAFAFA', boxSizing: 'border-box', color: '#111', fontFamily: 'inherit', fontWeight: '600' },
+    btn:         { width: '100%', padding: '16px', background: 'linear-gradient(135deg, #FF6B9D, #A78BFA)', color: '#fff', border: 'none', borderRadius: '14px', fontWeight: '900', fontSize: '15px', cursor: 'pointer', letterSpacing: '0.3px', fontFamily: 'inherit', boxShadow: '0 4px 20px rgba(255,107,157,0.4)' },
+    register:    { textAlign: 'center', fontSize: '13px', color: '#888', marginTop: '20px', fontWeight: '600' },
+    registerLink:{ color: '#FF6B9D', fontWeight: '800', textDecoration: 'none' },
+};
 
 export default Login;

@@ -1,46 +1,58 @@
-export default function Footer() {
-    return (
-      <footer className="bg-[#7a2f0f] m-0 p-0">
-        <div className="text-center text-white py-5 flex justify-center">
-          <div className="text-center text-center p-4 border-r border-[#5a1f07]">
-          <h3 className="font-bold mb-2">Contacto</h3>
-          <p className="mb-3">servicioalcliente@mimos.com.co</p>
-          <div className="flex justify-center gap-3">
-            <div className="bg-[#5a1f07] rounded-full w-7 h-7 flex items-center justify-center">f</div>
-            <div className="bg-[#5a1f07] rounded-full w-7 h-7 flex items-center justify-center">x</div>
-            <div className="bg-[#5a1f07] rounded-full w-7 h-7 flex items-center justify-center">ig</div>
-          </div>
+import { Link } from 'react-router-dom';
+
+const Footer = () => (
+    <footer style={s.footer}>
+        {/* Franja de colores decorativa */}
+        <div style={s.rainbow}>
+            {['#FF6B9D','#FFE066','#4ECDC4','#A78BFA','#FF9F43','#6BCB77'].map(c => (
+                <div key={c} style={{ flex: 1, background: c, height: '100%' }} />
+            ))}
         </div>
 
-        <div className="text-center border-[#5a1f07] p-4 border-r">
-          <h3 className="font-bold mb-2">Horario</h3>
-          <p>Todos los días</p>
-          <p className="mb-2">11AM-8PM</p>
-          <p className="text-sm mb-4">Puede variar según punto de venta</p>
-          <button className="border border-red-600 px-4 py-1 text-sm">
-            Encuéntranos aquí
-          </button>
+        <div style={s.inner}>
+            <div style={s.col}>
+                <p style={s.logoText}>✏️ Pape<span style={s.logoAccent}>lería</span></p>
+                <p style={s.desc}>Tu tienda colorida de útiles escolares, artículos de oficina y suministros creativos.</p>
+            </div>
+
+            <div style={s.col}>
+                <p style={s.colTitle}>Tienda</p>
+                <Link to="/menu"    style={s.link}>🛍️ Catálogo</Link>
+                <Link to="/carrito" style={s.link}>🛒 Carrito</Link>
+            </div>
+
+            <div style={s.col}>
+                <p style={s.colTitle}>Cuenta</p>
+                <Link to="/login"    style={s.link}>🔑 Iniciar sesión</Link>
+                <Link to="/registro" style={s.link}>🎉 Registrarse</Link>
+            </div>
+
+            <div style={s.col}>
+                <p style={s.colTitle}>Contacto</p>
+                <p style={s.link}>📧 info@papeleria.com</p>
+                <p style={s.link}>📞 +57 300 000 0000</p>
+                <p style={s.link}>📍 Medellín, Colombia</p>
+            </div>
         </div>
 
-        <div className="text-center border-[#5a1f07] p-4">
-          <h3 className="font-bold mb-3">Políticas</h3>
-          <ul className="text-sm font-semibold space-y-1">
-            <li>Aviso de Privacidad</li>
-            <li>Política de Tratamiento de datos Personales</li>
-            <li className="ml-4">Línea Ética</li>
-            <li>Política de Cookies</li>
-            <li>Formato de denuncias PTEE</li>
-            <li>Términos y Condiciones</li>
-            <li className="ml-4">Legales Promos</li>
-          </ul>
+        <div style={s.bottom}>
+            <p style={s.copy}>© {new Date().getFullYear()} Papelería. Hecho con 💛 en Colombia.</p>
         </div>
-        </div>
-        <div className="text-center text-sm text-white/80 bg-[#7a2f0f] text-white px-4 py-4 m-0">
-        <div className="text-4xl mb-2"></div>
-          <p>Mimos® - 2026. Todos los derechos reservados.</p>
-        </div>
+    </footer>
+);
 
-      </footer>
-      
-    );
-  }
+const s = {
+    footer:     { background: '#111', fontFamily: "'Nunito','Segoe UI',sans-serif", marginTop: '80px' },
+    rainbow:    { display: 'flex', height: '6px' },
+    inner:      { maxWidth: '1200px', margin: '0 auto', padding: '56px 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '40px' },
+    col:        { display: 'flex', flexDirection: 'column', gap: '10px' },
+    logoText:   { fontSize: '22px', fontWeight: '900', color: '#fff', margin: 0 },
+    logoAccent: { color: '#FF6B9D' },
+    desc:       { fontSize: '13px', color: '#666', lineHeight: '1.7', margin: 0 },
+    colTitle:   { fontSize: '11px', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', color: '#FFE066', margin: '0 0 4px' },
+    link:       { fontSize: '13px', color: '#888', textDecoration: 'none', margin: 0, fontWeight: '600' },
+    bottom:     { borderTop: '1px solid #222', padding: '20px 24px', textAlign: 'center' },
+    copy:       { fontSize: '12px', color: '#555', margin: 0, fontWeight: '600' },
+};
+
+export default Footer;
